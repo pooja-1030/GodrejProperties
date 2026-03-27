@@ -2,6 +2,15 @@ import { useState, useEffect, useCallback } from 'react'
 import './App.css'
 
 /* ===== DATA ===== */
+const brochurePages = [
+  { src: '/broucher1.jpeg', alt: 'Brochure Page 1' },
+  { src: '/broucher2.jpeg', alt: 'Brochure Page 2' },
+  { src: '/broucher3.jpeg', alt: 'Brochure Page 3' },
+  { src: '/broucher4.jpeg', alt: 'Brochure Page 4' },
+  { src: '/broucher5.jpeg', alt: 'Brochure Page 5' },
+  { src: '/broucher6.jpeg', alt: 'Brochure Page 6' },
+]
+
 const heroSlides = [
   { src: '/wanted.jpg', alt: 'Godrej Aveline panoramic aerial view' },
   { src: '/want5.jpg', alt: 'Live Beautifully - Airport proximity' },
@@ -166,17 +175,15 @@ function App() {
     if (!data.name || !data.phone || !data.email) return
     setBrochureState('loading')
     setTimeout(() => {
-      // Download both brochures
-      const link1 = document.createElement('a')
-      link1.href = '/broucher1.jpeg'
-      link1.download = 'Godrej-Aveline-Brochure-1.jpeg'
-      link1.click()
-      setTimeout(() => {
-        const link2 = document.createElement('a')
-        link2.href = '/broucher2.jpeg'
-        link2.download = 'Godrej-Aveline-Brochure-2.jpeg'
-        link2.click()
-      }, 500)
+      // Download all brochure pages sequentially
+      brochurePages.forEach((page, i) => {
+        setTimeout(() => {
+          const link = document.createElement('a')
+          link.href = page.src
+          link.download = `Godrej-Aveline-Brochure-${i + 1}.jpeg`
+          link.click()
+        }, i * 500)
+      })
       setBrochureState('success')
       setExitPopup(false)
       setExitDismissed(true)
@@ -559,8 +566,9 @@ function App() {
                 </li>
               </ul>
               <div className="brochure-previews">
-                <img src="/broucher1.jpeg" alt="Brochure Page 1" onClick={() => setBrochureLightbox({ open: true, index: 0 })} />
-                <img src="/broucher2.jpeg" alt="Brochure Page 2" onClick={() => setBrochureLightbox({ open: true, index: 1 })} />
+                {brochurePages.map((page, i) => (
+                  <img key={i} src={page.src} alt={page.alt} onClick={() => setBrochureLightbox({ open: true, index: i })} />
+                ))}
               </div>
             </div>
 
@@ -765,12 +773,12 @@ function App() {
         <div className="lightbox" onClick={() => setBrochureLightbox({ open: false, index: 0 })}>
           <button className="lightbox-close" aria-label="Close"><Icon name="icon-close" size={28} /></button>
           <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <img src={brochureLightbox.index === 0 ? '/broucher1.jpeg' : '/broucher2.jpeg'} alt={`Brochure Page ${brochureLightbox.index + 1}`} />
+            <img src={brochurePages[brochureLightbox.index].src} alt={brochurePages[brochureLightbox.index].alt} />
             <p className="lightbox-caption">Godrej Aveline Brochure — Page {brochureLightbox.index + 1}</p>
             <div className="lightbox-nav">
-              <button onClick={() => setBrochureLightbox(p => ({ ...p, index: p.index === 0 ? 1 : 0 }))}>Prev</button>
-              <span>{brochureLightbox.index + 1} / 2</span>
-              <button onClick={() => setBrochureLightbox(p => ({ ...p, index: p.index === 0 ? 1 : 0 }))}>Next</button>
+              <button onClick={() => setBrochureLightbox(p => ({ ...p, index: (p.index - 1 + brochurePages.length) % brochurePages.length }))}>Prev</button>
+              <span>{brochureLightbox.index + 1} / {brochurePages.length}</span>
+              <button onClick={() => setBrochureLightbox(p => ({ ...p, index: (p.index + 1) % brochurePages.length }))}>Next</button>
             </div>
           </div>
         </div>
