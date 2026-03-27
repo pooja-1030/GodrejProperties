@@ -102,6 +102,8 @@ function App() {
   const [brochureState, setBrochureState] = useState('idle') // idle | loading | success
   const [exitPopup, setExitPopup] = useState(false)
   const [exitDismissed, setExitDismissed] = useState(false)
+  const [brochureLightbox, setBrochureLightbox] = useState({ open: false, index: 0 })
+  const [showPrivacy, setShowPrivacy] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentSlide(prev => (prev + 1) % heroSlides.length), 5000)
@@ -128,9 +130,9 @@ function App() {
   }, [])
 
   useEffect(() => {
-    document.body.style.overflow = (menuOpen || lightbox.open || gateModal.open || exitPopup) ? 'hidden' : ''
+    document.body.style.overflow = (menuOpen || lightbox.open || gateModal.open || exitPopup || brochureLightbox.open || showPrivacy) ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
-  }, [menuOpen, lightbox.open, gateModal.open, exitPopup])
+  }, [menuOpen, lightbox.open, gateModal.open, exitPopup, brochureLightbox.open, showPrivacy])
 
   // Exit intent detection
   useEffect(() => {
@@ -206,6 +208,7 @@ function App() {
             {navLink('gallery', 'Gallery')}
             {navLink('location', 'Location')}
             {navLink('brochure', 'Brochure')}
+            <a href="#privacy" onClick={(e) => { e.preventDefault(); setMenuOpen(false); setShowPrivacy(true) }}>Privacy Policy</a>
             {navLink('lead-form', 'Enquire Now', 'navbar-cta')}
           </div>
           <button className={`mobile-toggle ${menuOpen ? 'active' : ''}`} onClick={() => setMenuOpen(p => !p)} aria-label="Toggle menu">
@@ -556,8 +559,8 @@ function App() {
                 </li>
               </ul>
               <div className="brochure-previews">
-                <img src="/broucher1.jpeg" alt="Brochure Page 1" />
-                <img src="/broucher2.jpeg" alt="Brochure Page 2" />
+                <img src="/broucher1.jpeg" alt="Brochure Page 1" onClick={() => setBrochureLightbox({ open: true, index: 0 })} />
+                <img src="/broucher2.jpeg" alt="Brochure Page 2" onClick={() => setBrochureLightbox({ open: true, index: 1 })} />
               </div>
             </div>
 
@@ -699,7 +702,11 @@ function App() {
           <div className="divider" />
           <div className="footer-bottom">
             <p>&copy; 2026 Godrej Properties Limited. All rights reserved.</p>
-            <p>RERA No: PRM/KA/RERA/1251/309/PR/020326/008501</p>
+            <div className="footer-bottom-links">
+              <a href="#privacy" onClick={(e) => { e.preventDefault(); setShowPrivacy(true) }}>Privacy Policy</a>
+              <span>|</span>
+              <p>RERA No: PRM/KA/RERA/1251/309/PR/020326/008501</p>
+            </div>
           </div>
           <p className="footer-disclaimer">
             Disclaimer: This is not an official offering. Content is for informational purposes only.
@@ -748,6 +755,97 @@ function App() {
                   )}
                 </button>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== BROCHURE LIGHTBOX ===== */}
+      {brochureLightbox.open && (
+        <div className="lightbox" onClick={() => setBrochureLightbox({ open: false, index: 0 })}>
+          <button className="lightbox-close" aria-label="Close"><Icon name="icon-close" size={28} /></button>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <img src={brochureLightbox.index === 0 ? '/broucher1.jpeg' : '/broucher2.jpeg'} alt={`Brochure Page ${brochureLightbox.index + 1}`} />
+            <p className="lightbox-caption">Godrej Aveline Brochure — Page {brochureLightbox.index + 1}</p>
+            <div className="lightbox-nav">
+              <button onClick={() => setBrochureLightbox(p => ({ ...p, index: p.index === 0 ? 1 : 0 }))}>Prev</button>
+              <span>{brochureLightbox.index + 1} / 2</span>
+              <button onClick={() => setBrochureLightbox(p => ({ ...p, index: p.index === 0 ? 1 : 0 }))}>Next</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== PRIVACY POLICY MODAL ===== */}
+      {showPrivacy && (
+        <div className="privacy-overlay" onClick={() => setShowPrivacy(false)}>
+          <div className="privacy-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="privacy-close" onClick={() => setShowPrivacy(false)} aria-label="Close">
+              <Icon name="icon-close" size={22} />
+            </button>
+            <div className="privacy-content">
+              <h2>Privacy Policy</h2>
+              <p className="privacy-updated">Last Updated: March 2026</p>
+
+              <h3>1. Information We Collect</h3>
+              <p>When you interact with the Godrej Aveline website, we may collect the following personal information:</p>
+              <ul>
+                <li><strong>Contact Information:</strong> Full name, phone number, and email address provided through our enquiry forms, brochure download forms, and lead capture forms.</li>
+                <li><strong>Preference Data:</strong> Your preferred apartment configuration (3 BHK, 3.5 BHK, 4.5 BHK) and site visit scheduling preferences.</li>
+                <li><strong>Usage Data:</strong> Browser type, device information, pages visited, time spent on pages, and interaction patterns collected automatically through cookies and analytics tools.</li>
+              </ul>
+
+              <h3>2. How We Use Your Information</h3>
+              <p>Your personal information is used for the following purposes:</p>
+              <ul>
+                <li>To respond to your enquiries and schedule site visits.</li>
+                <li>To share project brochures, floor plans, pricing, and other requested materials.</li>
+                <li>To provide updates about Godrej Aveline, including construction progress, new offers, and launch events.</li>
+                <li>To connect you with our authorized sales team for personalized assistance.</li>
+                <li>To improve our website experience and marketing communications.</li>
+              </ul>
+
+              <h3>3. Information Sharing</h3>
+              <p>We do not sell your personal information. We may share your data with:</p>
+              <ul>
+                <li><strong>Godrej Properties Limited:</strong> As the project developer, for sales and customer relationship management.</li>
+                <li><strong>Authorized Channel Partners:</strong> Verified real estate agents assisting with the sales process.</li>
+                <li><strong>Service Providers:</strong> Third-party tools for CRM, email communications, and analytics — bound by data protection agreements.</li>
+                <li><strong>Legal Requirements:</strong> When required by law, regulation, or legal proceedings.</li>
+              </ul>
+
+              <h3>4. Data Security</h3>
+              <p>We implement industry-standard security measures including SSL encryption, secure data storage, and access controls to protect your personal information from unauthorized access, alteration, or disclosure.</p>
+
+              <h3>5. Cookies</h3>
+              <p>Our website uses cookies and similar tracking technologies to enhance user experience and gather analytics data. You can manage cookie preferences through your browser settings. Disabling cookies may affect certain website functionalities.</p>
+
+              <h3>6. Your Rights</h3>
+              <p>You have the right to:</p>
+              <ul>
+                <li>Access the personal data we hold about you.</li>
+                <li>Request correction of inaccurate information.</li>
+                <li>Request deletion of your personal data.</li>
+                <li>Opt out of marketing communications at any time.</li>
+                <li>Withdraw consent for data processing.</li>
+              </ul>
+
+              <h3>7. Data Retention</h3>
+              <p>We retain your personal information for as long as necessary to fulfill the purposes outlined in this policy, or as required by law. If you request deletion, we will remove your data within 30 business days, except where retention is required by legal obligations.</p>
+
+              <h3>8. Third-Party Links</h3>
+              <p>Our website may contain links to external websites (e.g., WhatsApp, Google Maps). We are not responsible for the privacy practices of these third-party services. We encourage you to review their respective privacy policies.</p>
+
+              <h3>9. Contact Us</h3>
+              <p>For any privacy-related concerns or requests, please contact:</p>
+              <p><strong>Godrej Properties Limited</strong><br />
+              Godrej One, 5th Floor, Pirojshanagar<br />
+              Eastern Express Highway, Vikhroli East<br />
+              Mumbai — 400079, Maharashtra<br />
+              Email: privacy@godrejproperties.com</p>
+
+              <h3>10. Updates to This Policy</h3>
+              <p>We may update this Privacy Policy periodically. Changes will be posted on this page with a revised "Last Updated" date. Continued use of the website after changes constitutes acceptance of the updated policy.</p>
             </div>
           </div>
         </div>

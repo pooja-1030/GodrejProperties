@@ -469,7 +469,11 @@
 .footer-links a { font-size: 0.82rem; color: rgba(255,255,255,0.45); transition: color var(--transition-fast); }
 .footer-links a:hover { color: var(--gold-light); }
 .footer .divider { width: 100%; height: 1px; background: rgba(255,255,255,0.08); margin: 24px 0; }
-.footer-bottom { display: flex; justify-content: space-between; font-size: 0.78rem; color: rgba(255,255,255,0.3); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: rgba(255,255,255,0.3); }
+.footer-bottom-links { display: flex; align-items: center; gap: 12px; }
+.footer-bottom-links a { color: rgba(255,255,255,0.45); transition: color var(--transition-fast); text-decoration: underline; text-underline-offset: 2px; }
+.footer-bottom-links a:hover { color: var(--gold-light); }
+.footer-bottom-links span { color: rgba(255,255,255,0.2); }
 .footer-disclaimer {
   margin-top: 16px; font-size: 0.7rem; color: rgba(255,255,255,0.2);
   line-height: 1.6; max-width: 700px;
@@ -614,6 +618,7 @@
   border-radius: var(--radius-md); border: 2px solid var(--border-light);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-normal);
+  cursor: pointer;
 }
 .brochure-previews img:hover {
   transform: translateY(-6px) scale(1.03); box-shadow: var(--shadow-lg);
@@ -748,6 +753,66 @@
 .exit-popup-submit:disabled { opacity: 0.8; cursor: not-allowed; }
 
 /* ========================================
+   PRIVACY POLICY MODAL
+   ======================================== */
+.privacy-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.3s ease;
+}
+.privacy-modal {
+  background: var(--white); border-radius: var(--radius-xl);
+  max-width: 720px; width: 100%; max-height: 85vh;
+  position: relative; overflow: hidden;
+  box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+  animation: slideUp 0.4s ease;
+}
+.privacy-close {
+  position: absolute; top: 16px; right: 16px; z-index: 2;
+  background: var(--surface); border: 1px solid var(--border-light);
+  border-radius: 50%; width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+.privacy-close:hover { background: var(--text-primary); color: var(--white); }
+.privacy-content {
+  padding: 48px 40px 40px;
+  overflow-y: auto; max-height: 85vh;
+  scrollbar-width: thin; scrollbar-color: var(--border-light) transparent;
+}
+.privacy-content::-webkit-scrollbar { width: 6px; }
+.privacy-content::-webkit-scrollbar-track { background: transparent; }
+.privacy-content::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+.privacy-content h2 {
+  font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700;
+  color: var(--text-primary); margin-bottom: 4px;
+}
+.privacy-updated {
+  font-size: 0.82rem; color: var(--text-muted); margin-bottom: 28px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--border-light);
+}
+.privacy-content h3 {
+  font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700;
+  color: var(--text-primary); margin-top: 24px; margin-bottom: 10px;
+}
+.privacy-content p {
+  font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7;
+  margin-bottom: 12px;
+}
+.privacy-content ul {
+  margin: 0 0 16px 0; padding-left: 20px;
+  list-style: disc;
+}
+.privacy-content ul li {
+  font-size: 0.86rem; color: var(--text-secondary); line-height: 1.7;
+  margin-bottom: 6px;
+}
+.privacy-content ul li strong { color: var(--text-primary); }
+
+/* ========================================
    FLOATING BUTTONS (WhatsApp + CTA)
    ======================================== */
 .floating-buttons {
@@ -838,57 +903,178 @@
    RESPONSIVE — MOBILE
    ======================================== */
 @media (max-width: 640px) {
+  /* Hero */
   .hero { min-height: 600px; }
   .hero h1 { font-size: 2.25rem; }
+  .hero-sub { font-size: 0.95rem; letter-spacing: 1px; margin-bottom: 2rem; }
+  .hero-rera { font-size: 0.6rem; padding: 6px 16px; letter-spacing: 2px; }
   .hero-buttons { flex-direction: column; width: 100%; padding: 0 20px; }
-  .hero-buttons .btn { width: 100%; justify-content: center; }
+  .hero-buttons .btn { width: 100%; justify-content: center; padding: 16px 24px; font-size: 0.9rem; }
   .hero-stats { flex-wrap: wrap; border-radius: 20px; padding: 16px 20px; gap: 8px; justify-content: center; }
   .hero-stat-divider { display: none; }
   .hero-stat { padding: 4px 14px; }
   .hero-scroll-hint { display: none; }
+  .hero-indicators { bottom: 24px; gap: 8px; }
+  .hero-indicators span { width: 28px; height: 3px; }
+  .hero-indicators span.active { width: 44px; }
 
+  /* Trust band */
+  .trust-band { padding: 18px 0; }
+  .trust-badge strong { font-size: 1rem; }
   .trust-stats-row { gap: 16px; flex-wrap: wrap; justify-content: center; }
+  .trust-stat strong { font-size: 1rem; }
 
+  /* Overview */
+  .overview-desc { font-size: 0.92rem; }
+  .overview-feat { padding: 12px 16px; }
+  .overview-feat strong { font-size: 0.85rem; }
+
+  /* Pricing */
   .pricing-grid { grid-template-columns: 1fr; }
+  .pricing-card { padding: 28px 20px 24px; }
+  .config-price { font-size: 1.7rem; }
+  .config-btn { padding: 14px 20px; font-size: 0.88rem; }
 
+  /* Amenities */
   .amenity-showcase { grid-template-columns: 1fr; }
   .amenity-showcase-card { height: 200px; }
   .amenity-categories { grid-template-columns: 1fr; }
+  .amenity-cat-card { padding: 22px 20px; }
+  .amenity-badge { padding: 10px 24px; font-size: 0.8rem; }
 
-  .gallery-grid { grid-template-columns: 1fr; grid-auto-rows: 180px; }
+  /* Gallery */
+  .gallery-grid { grid-template-columns: 1fr; grid-auto-rows: 200px; }
   .gallery-item-large { grid-column: span 1; }
 
+  /* Connectivity */
   .connectivity-cards { grid-template-columns: 1fr; }
+  .connectivity-desc { font-size: 0.92rem; }
+  .conn-card { padding: 16px; }
+  .conn-time { font-size: 1.1rem; }
 
-  .form-wrapper { padding: 28px 20px; }
-
-  .urgency-banner h2 { font-size: 1.75rem; }
-
-  .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
-
-  .floating-buttons { bottom: 16px; right: 16px; gap: 10px; }
-  .whatsapp-btn { width: 48px; height: 48px; }
-  .sticky-cta-btn { padding: 12px 20px; font-size: 0.8rem; }
-
+  /* Nearby */
   .nearby { padding: 24px 16px; }
+  .nearby-title { font-size: 1.25rem; }
   .nearby-tabs { gap: 6px; }
-  .nearby-tab { padding: 6px 14px; font-size: 0.75rem; }
+  .nearby-tab { padding: 8px 16px; font-size: 0.78rem; }
+  .nearby-name { font-size: 0.82rem; }
 
-  .brochure-form-wrap { padding: 28px 20px; }
-  .brochure-previews img { width: 110px; height: 145px; }
-  .brochure-features li { font-size: 0.88rem; }
+  /* Map */
+  .map-section { margin-top: 32px; }
+  .map-placeholder { height: 280px; }
+  .map-section iframe { height: 280px; }
 
-  .exit-popup-content { padding: 28px 20px; }
-  .exit-popup h3 { font-size: 1.25rem; }
-
-  .gate-modal-box { width: 92%; padding: 28px 20px; }
-  .gate-modal-box h3 { font-size: 1.2rem; }
-
+  /* Gated content */
   .gated-content { border-radius: var(--radius-md); }
+  .gated-lock-icon { width: 56px; height: 56px; }
+  .gated-lock-icon svg { width: 24px; height: 24px; }
   .gated-lock h4 { font-size: 1rem; }
   .gated-lock p { font-size: 0.8rem; }
-  .gated-lock .gate-unlock-btn { padding: 10px 24px; font-size: 0.8rem; }
+  .gated-lock-btn { padding: 10px 24px; font-size: 0.8rem; }
 
-  .map-section { margin-top: 40px; }
-  .map-section iframe { height: 280px; }
+  /* Urgency */
+  .urgency-banner { padding: 48px 0; }
+  .urgency-banner h2 { font-size: 1.75rem; }
+  .urgency-banner p { font-size: 0.92rem; }
+
+  /* Brochure */
+  .brochure-inner { gap: 32px; }
+  .brochure-desc { font-size: 0.92rem; }
+  .brochure-form-wrap { padding: 28px 20px; }
+  .brochure-form-title { font-size: 1.2rem; }
+  .brochure-previews { gap: 12px; }
+  .brochure-previews img { width: 110px; height: 145px; }
+  .brochure-features li { font-size: 0.88rem; gap: 10px; }
+  .brochure-check { width: 24px; height: 24px; }
+  .brochure-check svg { width: 12px; height: 12px; }
+  .brochure-submit { padding: 14px 24px; font-size: 0.88rem; }
+  .brochure-success-icon { width: 64px; height: 64px; }
+  .brochure-success-icon svg { width: 36px; height: 36px; }
+  .brochure-success h3 { font-size: 1.1rem; }
+  .brochure-wa-link { padding: 12px 24px; font-size: 0.82rem; }
+
+  /* Lead form */
+  .form-wrapper { padding: 28px 20px; }
+  .form-desc { font-size: 0.92rem; }
+  .form-submit { padding: 14px 24px; font-size: 0.9rem; }
+  .form-group input, .form-group select { padding: 14px 16px; font-size: 0.9rem; }
+
+  /* Footer */
+  .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .footer-brand .brand-name { font-size: 1.1rem; }
+
+  /* Floating buttons */
+  .floating-buttons { bottom: 16px; right: 16px; gap: 8px; }
+  .whatsapp-btn { width: 48px; height: 48px; }
+  .whatsapp-btn svg { width: 22px; height: 22px; }
+  .sticky-cta-btn { padding: 12px 20px; font-size: 0.8rem; }
+
+  /* Gate modal */
+  .gate-modal { padding: 28px 20px; max-width: 92%; }
+  .gate-modal h3 { font-size: 1.2rem; }
+  .gate-modal > p { font-size: 0.82rem; }
+  .gate-modal input { padding: 12px 16px; font-size: 0.9rem; }
+  .gate-modal-submit { padding: 12px; font-size: 0.85rem; }
+  .gate-modal-icon { width: 52px; height: 52px; }
+  .gate-modal-icon svg { width: 30px; height: 30px; }
+
+  /* Exit popup */
+  .exit-popup-overlay { padding: 16px; }
+  .exit-popup { max-width: 95%; }
+  .exit-popup-content { padding: 28px 20px; }
+  .exit-popup h3 { font-size: 1.25rem; }
+  .exit-popup > .exit-popup-content > p { font-size: 0.82rem; }
+  .exit-popup input { padding: 12px 16px; font-size: 0.9rem; }
+  .exit-popup-submit { padding: 12px; font-size: 0.85rem; }
+  .exit-popup-icon { width: 52px; height: 52px; }
+  .exit-popup-icon svg { width: 28px; height: 28px; }
+
+  /* Lightbox */
+  .lightbox { padding: 16px; }
+  .lightbox-close { top: 12px; right: 12px; }
+  .lightbox-nav { gap: 16px; margin-top: 14px; }
+  .lightbox-nav button { padding: 8px 16px; font-size: 0.78rem; }
+
+  /* Privacy Modal */
+  .privacy-overlay { padding: 16px; }
+  .privacy-modal { max-height: 90vh; }
+  .privacy-content { padding: 40px 24px 32px; }
+  .privacy-content h2 { font-size: 1.4rem; }
+  .privacy-content h3 { font-size: 0.95rem; }
+  .privacy-content p, .privacy-content ul li { font-size: 0.82rem; }
+  .footer-bottom { flex-direction: column; align-items: center; gap: 8px; }
+  .footer-bottom-links { gap: 8px; flex-wrap: wrap; justify-content: center; }
+}
+
+/* ========================================
+   RESPONSIVE — SMALL PHONES
+   ======================================== */
+@media (max-width: 400px) {
+  .container { padding: 0 16px; }
+  section { padding: 56px 0; }
+
+  .hero h1 { font-size: 1.85rem; }
+  .hero-sub { font-size: 0.85rem; }
+  .hero-stats { padding: 12px 14px; }
+  .hero-stat strong { font-size: 1.1rem; }
+  .hero-stat span { font-size: 0.6rem; }
+
+  .section-title { font-size: 1.65rem; }
+  .section-subtitle { font-size: 0.88rem; }
+
+  .navbar-brand .brand-name { font-size: 1.2rem; }
+  .navbar-brand .brand-tag { font-size: 0.5rem; letter-spacing: 1.5px; }
+
+  .brochure-previews img { width: 90px; height: 120px; }
+  .brochure-features li { font-size: 0.82rem; }
+
+  .pricing-card { padding: 24px 16px 20px; }
+  .config-type { font-size: 1.1rem; }
+  .config-price { font-size: 1.5rem; }
+
+  .floating-buttons { bottom: 12px; right: 12px; }
+  .sticky-cta-btn { padding: 10px 16px; font-size: 0.75rem; gap: 6px; }
+  .whatsapp-btn { width: 44px; height: 44px; }
+
+  .urgency-banner h2 { font-size: 1.5rem; }
 }
