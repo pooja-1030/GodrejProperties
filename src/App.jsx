@@ -166,13 +166,15 @@ function App() {
   }, [])
 
   const handleGateSubmit = useCallback(async (type, formData) => {
-    const { error } = await supabase.from('leads').insert({
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email,
-      source: `gate_${type}`,
-    })
-    if (error) console.error('Supabase insert error:', error.message)
+    if (supabase) {
+      const { error } = await supabase.from('leads').insert({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        source: `gate_${type}`,
+      })
+      if (error) console.error('Supabase insert error:', error.message)
+    }
     setUnlocked(p => ({ ...p, [type]: true }))
     setGateModal({ open: false, type: '' })
   }, [])
@@ -182,14 +184,16 @@ function App() {
     const data = formData || brochureForm
     if (!data.name || !data.phone || !data.email) return
     setBrochureState('loading')
-    const { error } = await supabase.from('leads').insert({
-      name: data.name,
-      phone: data.phone,
-      email: data.email,
-      configuration: data.config || null,
-      source: 'brochure_download',
-    })
-    if (error) console.error('Supabase insert error:', error.message)
+    if (supabase) {
+      const { error } = await supabase.from('leads').insert({
+        name: data.name,
+        phone: data.phone,
+        email: data.email,
+        configuration: data.config || null,
+        source: 'brochure_download',
+      })
+      if (error) console.error('Supabase insert error:', error.message)
+    }
     setTimeout(() => {
       // Download all brochure pages sequentially
       brochurePages.forEach((page, i) => {
@@ -676,20 +680,22 @@ function App() {
               <form onSubmit={async (e) => {
                 e.preventDefault()
                 const f = new FormData(e.target)
-                const { error } = await supabase.from('leads').insert({
-                  name: f.get('name'),
-                  phone: f.get('phone'),
-                  email: f.get('email'),
-                  configuration: f.get('config'),
-                  source: 'enquiry_form',
-                })
-                if (error) {
-                  console.error('Supabase insert error:', error.message)
-                  alert('Something went wrong. Please try again.')
-                } else {
-                  alert('Thank you! We will contact you shortly.')
-                  e.target.reset()
+                if (supabase) {
+                  const { error } = await supabase.from('leads').insert({
+                    name: f.get('name'),
+                    phone: f.get('phone'),
+                    email: f.get('email'),
+                    configuration: f.get('config'),
+                    source: 'enquiry_form',
+                  })
+                  if (error) {
+                    console.error('Supabase insert error:', error.message)
+                    alert('Something went wrong. Please try again.')
+                    return
+                  }
                 }
+                alert('Thank you! We will contact you shortly.')
+                e.target.reset()
               }}>
                 <div className="form-group">
                   <label htmlFor="name">Full Name</label>
