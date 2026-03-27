@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { supabase } from './supabase'
 import './App.css'
 
 /* ===== DATA ===== */
@@ -164,16 +165,31 @@ function App() {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }, [])
 
-  const handleGateSubmit = useCallback((type) => {
+  const handleGateSubmit = useCallback(async (type, formData) => {
+    const { error } = await supabase.from('leads').insert({
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      source: `gate_${type}`,
+    })
+    if (error) console.error('Supabase insert error:', error.message)
     setUnlocked(p => ({ ...p, [type]: true }))
     setGateModal({ open: false, type: '' })
   }, [])
 
-  const handleBrochureDownload = useCallback((e, formData) => {
+  const handleBrochureDownload = useCallback(async (e, formData) => {
     e.preventDefault()
     const data = formData || brochureForm
     if (!data.name || !data.phone || !data.email) return
     setBrochureState('loading')
+    const { error } = await supabase.from('leads').insert({
+      name: data.name,
+      phone: data.phone,
+      email: data.email,
+      configuration: data.config || null,
+      source: 'brochure_download',
+    })
+    if (error) console.error('Supabase insert error:', error.message)
     setTimeout(() => {
       // Download all brochure pages sequentially
       brochurePages.forEach((page, i) => {
@@ -657,22 +673,39 @@ function App() {
               </div>
             </div>
             <div className="form-wrapper animate-on-scroll">
-              <form onSubmit={(e) => e.preventDefault()}>
+              <form onSubmit={async (e) => {
+                e.preventDefault()
+                const f = new FormData(e.target)
+                const { error } = await supabase.from('leads').insert({
+                  name: f.get('name'),
+                  phone: f.get('phone'),
+                  email: f.get('email'),
+                  configuration: f.get('config'),
+                  source: 'enquiry_form',
+                })
+                if (error) {
+                  console.error('Supabase insert error:', error.message)
+                  alert('Something went wrong. Please try again.')
+                } else {
+                  alert('Thank you! We will contact you shortly.')
+                  e.target.reset()
+                }
+              }}>
                 <div className="form-group">
                   <label htmlFor="name">Full Name</label>
-                  <input type="text" id="name" placeholder="Enter your name" required />
+                  <input type="text" id="name" name="name" placeholder="Enter your name" required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="phone">Phone Number</label>
-                  <input type="tel" id="phone" placeholder="+91 Enter your phone" required />
+                  <input type="tel" id="phone" name="phone" placeholder="+91 Enter your phone" required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="email">Email Address</label>
-                  <input type="email" id="email" placeholder="Enter your email" required />
+                  <input type="email" id="email" name="email" placeholder="Enter your email" required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="config">Configuration</label>
-                  <select id="config" required>
+                  <select id="config" name="config" required>
                     <option value="">Select configuration</option>
                     <option value="3bhk-2t">3 BHK + 2T — 1,601 sq.ft — ₹2.53 Cr</option>
                     <option value="3bhk-3t">3 BHK + 3T — 1,907 sq.ft — ₹2.97 Cr</option>
@@ -728,7 +761,7 @@ function App() {
         <GateModal
           title={gateModal.type === 'masterplan' ? 'Unlock Master Plan' : 'Unlock Location Map'}
           onClose={() => setGateModal({ open: false, type: '' })}
-          onSubmit={() => handleGateSubmit(gateModal.type)}
+          onSubmit={(formData) => handleGateSubmit(gateModal.type, formData)}
         />
       )}
 
